@@ -1,0 +1,46 @@
+# ignore js files in model -> will be generated from ts files
+Main.js
+styles.css
+styles.css.map
+
+# temporary files
+*~
+*.swp
+*.*-swp
+*.tmp.*
+
+# ignore files
+*.ign.*
+
+# latex trash and temp files
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+
+# office files
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+*.od*
+
+# mac trash
+.DS_Store
+
+# linux trash
+*.lock
+*.bak
+.directory
+
+# ide trash
+/.idea/
+.settings
+.project
+
+# documentation
+issues.rst
