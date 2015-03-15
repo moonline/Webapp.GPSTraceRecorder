@@ -1,0 +1,20 @@
+{
+	"name": "GPS Trace Recorder",
+	"version": "0.1",
+	"description": "GPS trace recorder for FxOS",
+	"launch_path": "/index.html",
+	"icons": {
+		"32": "/Resources/Img/appIcon-32.png",
+		"64": "/Resources/Img/appIcon-64.png",
+		"128": "/Resources/Img/appIcon-128.png",
+		"256": "/Resources/Img/appIcon-256.png"
+	},
+	"developer": {
+		"name": "moonline",
+		"url": "https://github.com/moonline/gpstracerecorder"
+	},
+	"permissions": {
+		
+	},
+	"default_locale": "en"
+}
