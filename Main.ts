@@ -2,18 +2,15 @@ interface Navigator {
     getDeviceStorage: any;
 }
 
-var state = null;
+var state = false;
 var positionList = [];
 var trackPoints = 0;
+var saveFileState = null;
 
 function createXMLDocument(positionList) {
     var parser = new DOMParser();
     var gpxDocument = parser.parseFromString('<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.0"></gpx>', "text/xml");
     var gpxRootElement = gpxDocument.getElementsByTagName("gpx")[0];
-
-    /*var gpxDocument = document.implementation.createDocument("", "", null);
-    var gpxRootElement = gpxDocument.createElement("gpx");
-    gpxRootElement.setAttribute("version", "1.0");*/
 
     var nameElement = gpxDocument.createElement("name");
     nameElement.appendChild(gpxDocument.createTextNode("GPS Trace"));
@@ -54,8 +51,6 @@ function createXMLDocument(positionList) {
     });
 
     gpxRootElement.appendChild(track);
-    /*gpxDocument.appendChild(gpxRootElement);*/
-
     return gpxDocument;
 }
 
@@ -64,19 +59,25 @@ function saveTrace() {
     var serializer = new XMLSerializer();
     console.log(serializer.serializeToString(gpxDocument));
 
-    var sdcard = navigator.getDeviceStorage("sdcard");
-    var file   = new Blob([serializer.serializeToString(gpxDocument)], {type: "application/gpx+xml"});
+    var fileName = prompt("File name", "trace"+(new Date()).getTime()+".gpx");
 
-    var request = sdcard.addNamed(file, "trace"+(new Date()).toString()+".gpx");
+    if(fileName) {
+        var sdcard = navigator.getDeviceStorage("sdcard");
+        var file   = new Blob([serializer.serializeToString(gpxDocument)], {type: "application/gpx+xml"});
 
-    request.onsuccess = function () {
-      var name = this.result;
-      console.log('File "' + name + '" successfully wrote on the sdcard storage area');
-    }
+        var request = sdcard.addNamed(file, fileName);
 
-    // An error typically occur if a file with the same name already exist
-    request.onerror = function () {
-      console.warn('Unable to write the file: ' + this.error);
+        request.onsuccess = function () {
+          var name = this.result;
+          console.log('File "' + name + '" successfully wrote on the sdcard storage area');
+          positionList = [];
+          document.getElementById("trackPoints").textContent = positionList.length.toString();
+        }
+
+        // An error typically occur if a file with the same name already exist
+        request.onerror = function () {
+          console.warn('Unable to write the file: ' + this.error);
+        }
     }
 }
 
@@ -86,7 +87,6 @@ function findMyCurrentLocation(geoService){
         if (geoService) {
             geoService.getCurrentPosition(
                 function(position) {
-                    trackPoints++;
                     console.log(position);
                     positionList.push({
                         lat: position.coords.latitude,
@@ -98,11 +98,10 @@ function findMyCurrentLocation(geoService){
                     document.getElementById("lat").textContent = position.coords.latitude;
                     document.getElementById("lon").textContent = position.coords.longitude;
                     document.getElementById("altitude").textContent = position.coords.altitude;
-                    document.getElementById("trackPoints").textContent = trackPoints.toString();
+                    document.getElementById("trackPoints").textContent = positionList.length.toString();
 
                     var element:HTMLInputElement = <HTMLInputElement>document.getElementById("trackStep");
                     var delayTime: number = Number(element.value);
-                    console.log(HTMLInputElement, delayTime);
                     setTimeout(findMyCurrentLocation(geoService), delayTime*1000);
                 },
                 function(error) {
@@ -116,15 +115,30 @@ function findMyCurrentLocation(geoService){
 }
 
 window.onload = function() {
-    document.getElementById("start").addEventListener("click", function(event){
-        state = true;
-        findMyCurrentLocation(navigator.geolocation);
-    });
-    document.getElementById("stop").addEventListener("click", function(event){
-        state = false;
-    });
+    var saveButton = document.getElementById("save");
+    this.setSaveButtonState = function() {
+        if(state === false && positionList.length > 0) {
+            saveButton.removeAttribute("disabled");
+        } else {
+            saveButton.setAttribute("disabled", "disabled");
+        }
+    }
 
-    document.getElementById("save").addEventListener("click", function(event){
+    var controlButton = document.getElementById("control");
+    controlButton.addEventListener("click", function(event){
+        if(state === true) {
+            state = false;
+            controlButton.textContent = "Start";
+            this.setSaveButtonState();
+        } else {
+            state = true;
+            findMyCurrentLocation(navigator.geolocation);
+            controlButton.textContent = "Stop";
+            this.setSaveButtonState();
+        }
+    }.bind(this));
+
+    saveButton.addEventListener("click", function(event){
         saveTrace();
     });
 }

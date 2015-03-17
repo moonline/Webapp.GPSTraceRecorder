@@ -12,12 +12,10 @@
 		<link href="Resources/Styles/styles.css" type="text/css" rel="stylesheet" />-->
 	</head>
 	<body>
-		<form>
-			<input type="number" step="0.5" value="1" name="trackStep" id="trackStep" />
-			<button id="start">Start</button>
-			<button id="stop">Stop</button>
-			<button id="save">save</button>
-		</form>
+		<label for="trackStep">Interval (sec)</label>
+		<input type="number" step="0.5" min="0.5" max="1440" value="1" name="trackStep" id="trackStep" />
+		<button id="control">Start</button>
+		<button id="save" disabled="disabled">save</button>
 		<table>
 			<tbody>
 				<tr><th>Latitude</th><td id="lat"></td><tr>
