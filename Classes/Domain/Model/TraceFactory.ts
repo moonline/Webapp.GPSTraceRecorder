@@ -6,9 +6,9 @@
 
 class TraceFactory {
     state: boolean = false;
-    positionList: GPSPosition[];
-    trackStep: number;
-    observers: Observer[];
+    positionList: GPSPosition[] = [];
+    trackStep: number = 1;
+    observers: Observer[] = [];
 
     constructor(trackStep: number) {
         this.trackStep = trackStep;
@@ -21,7 +21,7 @@ class TraceFactory {
     notifyObservers(): void {
         this.observers.forEach(function(observer: Observer) {
             observer.notify();
-        })
+        });
     }
 
     getNumberOfTrackPoints(): number {
@@ -38,7 +38,7 @@ class TraceFactory {
 
     createXMLDocument(positionList: GPSPosition[]): XMLDocument {
         var parser = new DOMParser();
-        var gpxDocument = parser.parseFromString('<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.0"></gpx>', "text/xml");
+        var gpxDocument: XMLDocument = parser.parseFromString('<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.0"></gpx>', "text/xml");
         var gpxRootElement = gpxDocument.getElementsByTagName("gpx")[0];
 
         var nameElement = gpxDocument.createElement("name");
@@ -63,14 +63,13 @@ class TraceFactory {
             var elevation = position.elevation.toString();
             var timestamp = position.timestamp.toString();
 
-            console.log(position);
             var trackPoint = gpxDocument.createElement("trkpt");
             trackPoint.setAttribute("lat", lat);
             trackPoint.setAttribute("lon", lon);
 
-            var elevation = gpxDocument.createElement("elevation");
-            elevation.appendChild(gpxDocument.createTextNode(elevation));
-            trackPoint.appendChild(elevation);
+            var altitude = gpxDocument.createElement("elevation");
+            altitude.appendChild(gpxDocument.createTextNode(elevation));
+            trackPoint.appendChild(altitude);
 
             var timeElement = gpxDocument.createElement("time");
             timeElement.appendChild(gpxDocument.createTextNode(timestamp));
@@ -88,12 +87,12 @@ class TraceFactory {
     }
 
     saveTrace(): void {
-        var gpxDocument = createXMLDocument(positionList);
+        var gpxDocument = this.createXMLDocument(this.positionList);
         var serializer = new XMLSerializer();
         var resetTraceList = this.resetTraceList;
         var positionList = this.positionList;
-        var notifyObservers = this.notifyObservers;
-        console.log(serializer.serializeToString(gpxDocument));
+
+        var notifyObservers = this.notifyObservers.bind(this);
 
         var fileName = prompt("File name", "trace"+(new Date()).getTime()+".gpx");
 
@@ -121,15 +120,19 @@ class TraceFactory {
 
     findMyCurrentLocation(geoService): void{
         var positionList = this.positionList;
-        var findMyCurrentLocation = this.findMyCurrentLocation;
-        var notifyObservers = this.notifyObservers;
+        var delayTime = this.trackStep*1000;
+
+        var findMyCurrentLocation = this.findMyCurrentLocation.bind(this);
+        var notifyObservers = this.notifyObservers.bind(this);
 
         if(this.state === true) {
             if (geoService) {
+                setTimeout(function() {
+                    var geoServiceClousure = geoService;
+                    findMyCurrentLocation(geoServiceClousure);
+                }, delayTime);
                 geoService.getCurrentPosition(
                     function(position) {
-                        setTimeout(findMyCurrentLocation(geoService), delayTime*1000);
-                        console.log(position);
                         positionList.push(
                             new GPSPosition(
                                 position.coords.latitude,
