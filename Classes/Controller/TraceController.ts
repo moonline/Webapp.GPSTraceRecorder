@@ -15,6 +15,7 @@ class TraceController implements Observer {
     trackStepElement: HTMLInputElement;
     saveButton: HTMLButtonElement;
     controlButton: HTMLButtonElement;
+    resetButton: HTMLButtonElement;
 
     constructor() {
         this.latElement = document.getElementById("lat");
@@ -27,18 +28,25 @@ class TraceController implements Observer {
 
         this.saveButton = <HTMLButtonElement>document.getElementById("save");
         this.controlButton = <HTMLButtonElement>document.getElementById("control");
+        this.resetButton = <HTMLButtonElement>document.getElementById("reset");
 
         this.controlButton.addEventListener("click", function(event){
             if(this.traceFactory.state === true) {
                 this.traceFactory.state = false;
                 this.controlButton.textContent = "Start";
                 this.setSaveButtonState();
+                this.resetButton.removeAttribute("disabled");
             } else {
                 this.traceFactory.state = true;
                 this.traceFactory.findMyCurrentLocation(navigator.geolocation);
                 this.controlButton.textContent = "Stop";
                 this.setSaveButtonState();
+                this.resetButton.setAttribute("disabled", "disabled");
             }
+        }.bind(this));
+
+        this.resetButton.addEventListener("click", function(event){
+            this.traceFactory.resetTraceList();
         }.bind(this));
 
         this.trackStepElement.addEventListener("change", function(event) {
@@ -63,10 +71,11 @@ class TraceController implements Observer {
 
     notify(): void {
         var currentPosition: GPSPosition = this.traceFactory.getCurrentPosition();
-
-        this.latElement.textContent = currentPosition.lat.toString();
-        this.lonElement.textContent = currentPosition.lon.toString();
-        this.altitudeElement.textContent = currentPosition.elevation.toString();
+        if(currentPosition) {
+            this.latElement.textContent = currentPosition.lat.toString();
+            this.lonElement.textContent = currentPosition.lon.toString();
+            this.altitudeElement.textContent = currentPosition.elevation.toString();
+        }
         this.trackPointsElement.textContent = this.traceFactory.getNumberOfTrackPoints().toString();
     }
 }

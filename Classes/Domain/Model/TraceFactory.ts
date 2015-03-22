@@ -36,6 +36,11 @@ class TraceFactory {
         }
     }
 
+    resetTraceList(): void {
+        this.positionList = [];
+        this.notifyObservers();
+    }
+
     createXMLDocument(positionList: GPSPosition[]): XMLDocument {
         var parser = new DOMParser();
         var gpxDocument: XMLDocument = parser.parseFromString('<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.0"></gpx>', "text/xml");
@@ -82,17 +87,13 @@ class TraceFactory {
         return gpxDocument;
     }
 
-    resetTraceList(): void {
-        this.positionList = [];
-    }
-
     saveTrace(): void {
         var gpxDocument = this.createXMLDocument(this.positionList);
         var serializer = new XMLSerializer();
-        var resetTraceList = this.resetTraceList;
         var positionList = this.positionList;
 
         var notifyObservers = this.notifyObservers.bind(this);
+        var resetTraceList = this.resetTraceList.bind(this);
 
         var fileName = prompt("File name", "trace"+(new Date()).getTime()+".gpx");
 
