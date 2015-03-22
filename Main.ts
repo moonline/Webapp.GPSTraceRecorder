@@ -1,3 +1,5 @@
+/// <reference path="Classes/Controller/TraceController.ts" />
+
 interface Navigator {
     getDeviceStorage: any;
 }

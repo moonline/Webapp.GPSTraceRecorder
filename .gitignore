@@ -2,6 +2,8 @@
 Main.js
 styles.css
 styles.css.map
+tsconfig.json
+Classes/*.js
 
 # temporary files
 *~
