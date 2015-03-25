@@ -1,0 +1,89 @@
+/**
+ * FxOS View styles
+ * https://github.com/buildingfirefoxos/Building-Blocks/blob/gh-pages/util.css
+ */
+html {
+    height: 100%;
+    font-size: 62.5%; /* Setting base font to 10px and define all your units in rem. 1rem = 10px */
+}
+body {
+    margin: 0;
+    height: 100%;
+    display: block;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+section.view {
+    height: 100%;
+    .flex;
+    .flex-flow(column);
+    .justify-content(space-between);
+}
+header {
+    height: 6rem;
+    .flex;
+    .flex-flow(row);
+    .background-linear-gradient(rgb(25,25,25),rgb(10,10,10));
+    .justify-content(space-between);
+    border-bottom: 0.2rem solid teal;
+    color: white;
+
+    h1 { padding: 1.5rem; }
+    nav {
+        .flex;
+        .flex-flow(row);
+
+        &:before {
+            border-left: 0.2rem dotted gray;
+            display: block;
+            height: 3rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            content: "";
+            width: 0.1rem;
+        }
+
+        [data-icon] {
+            display: block;
+            padding: 1.5rem;
+            width: 6rem;
+            height: 6rem;
+            background-size: 3rem;
+            background-position: 1.5rem 1.5rem;
+            background-repeat: no-repeat;
+        }
+    }
+}
+div.main {
+    background: rgb(50,50,50);
+}
+footer {
+    .flex;
+    .flex-flow(row);
+    background: rgb(25,25,25);
+}
+
+
+.hidden {
+    visibility: hidden;
+}
+section[role="region"] {
+    height: 100%;
+    background: #fff;
+}
+section[role="region"] > header.fixed:first-child {
+    position: absolute;
+    width: 100%;
+}
+.scrollable {
+    overflow: auto;
+    height: 100%;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    position: relative;
+}
+.scrollable.header {
+    height: calc(100% - 5rem);
+    top: 5rem;
+}

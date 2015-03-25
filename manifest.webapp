@@ -1,0 +1,26 @@
+{
+	"name": "GPS Trace Recorder",
+	"version": "1.0",
+	"description": "Record GPS traces and save as gpx file with FxOS.",
+	"launch_path": "/index.html",
+	"icons": {
+		"32": "/Resources/Img/appIcon-32.png",
+		"128": "/Resources/Img/appIcon-256.png",
+		"256": "/Resources/Img/appIcon-256.png"
+	},
+	"developer": {
+		"name": "moonline",
+		"url": "https://github.com/moonline/gpstracerecorder"
+	},
+	"type": "privileged",
+	"permissions": {
+		"geolocation": {
+			"description" : "Used to record your position."
+		},
+		"device-storage:sdcard": {
+			"description": "Used to saved the recorded traces as gpx.",
+			"access": "readwrite"
+		}
+	},
+	"default_locale": "en"
+}
