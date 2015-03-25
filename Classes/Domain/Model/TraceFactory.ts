@@ -136,9 +136,10 @@ class TraceFactory {
                     function(position) {
                         positionList.push(
                             new GPSPosition(
-                                position.coords.latitude,
-                                position.coords.longitude,
-                                position.coords.altitude,
+                                // call by value
+                                <number>(new Number(position.coords.latitude)),
+                                <number>(new Number(position.coords.longitude)),
+                                <number>(new Number(position.coords.altitude)),
                                 (new Date(position.timestamp)).toJSON().toString()
                             )
                         );
