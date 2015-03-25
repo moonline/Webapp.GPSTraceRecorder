@@ -1,7 +1,7 @@
 {
 	"name": "GPS Trace Recorder",
-	"version": "0.1",
-	"description": "GPS trace recorder for FxOS",
+	"version": "1.0",
+	"description": "Record GPS traces and save as gpx file with FxOS.",
 	"launch_path": "/index.html",
 	"icons": {
 		"32": "/Resources/Img/appIcon-32.png",
@@ -15,9 +15,12 @@
 	"type": "privileged",
 	"permissions": {
 		"geolocation": {
-			"description" : "Used to locate me"
+			"description" : "Used to record your position."
 		},
-		"device-storage:sdcard": { "access": "readwrite" }
+		"device-storage:sdcard": {
+			"description": "Used to saved the recorded traces as gpx.",
+			"access": "readwrite"
+		}
 	},
 	"default_locale": "en"
 }
