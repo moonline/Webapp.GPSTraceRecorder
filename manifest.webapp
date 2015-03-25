@@ -10,7 +10,7 @@
 	},
 	"developer": {
 		"name": "moonline",
-		"url": "https://github.com/moonline/gpstracerecorder"
+		"url": "https://github.com/moonline/Webapp.GPSTraceRecorder"
 	},
 	"type": "privileged",
 	"permissions": {
