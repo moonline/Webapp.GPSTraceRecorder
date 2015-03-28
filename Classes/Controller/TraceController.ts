@@ -26,21 +26,20 @@ class TraceController implements Observer {
         this.trackPointsElement = document.getElementById("trackPoints");
         this.trackStepElement = <HTMLInputElement>document.getElementById("trackStep");
 
-        this.trace = new Trace(Number(this.trackStepElement.value));
+        this.trace = new Trace(Number(this.trackStepElement.value), navigator.geolocation);
 
         this.saveButton = <HTMLButtonElement>document.getElementById("save");
         this.controlButton = <HTMLButtonElement>document.getElementById("control");
         this.resetButton = <HTMLButtonElement>document.getElementById("reset");
 
         this.controlButton.addEventListener("click", function(event){
-            if(this.trace.state === true) {
-                this.trace.state = false;
+            if(this.trace.isRecording() === true) {
+                this.trace.stopRecording();
                 this.controlButton.textContent = "Start";
                 this.setSaveButtonState();
                 this.resetButton.removeAttribute("disabled");
             } else {
-                this.trace.state = true;
-                this.trace.findMyCurrentLocation(navigator.geolocation);
+                this.trace.startRecording();
                 this.controlButton.textContent = "Stop";
                 this.setSaveButtonState();
                 this.resetButton.setAttribute("disabled", "disabled");
@@ -52,7 +51,7 @@ class TraceController implements Observer {
         }.bind(this));
 
         this.trackStepElement.addEventListener("change", function(event) {
-            this.trace.trackStep = Number(this.trackStepElement.value);
+            this.trace.setTrackStep(Number(this.trackStepElement.value));
         }.bind(this));
 
         this.saveButton.addEventListener("click", function(event){
@@ -67,7 +66,7 @@ class TraceController implements Observer {
 
 
     setSaveButtonState(): void {
-        if(this.trace.state === false && this.trace.getNumberOfTrackPoints() > 0) {
+        if(this.trace.isRecording() === false && this.trace.getNumberOfTrackPoints() > 0) {
             this.saveButton.removeAttribute("disabled");
         } else {
             this.saveButton.setAttribute("disabled", "disabled");
@@ -75,11 +74,11 @@ class TraceController implements Observer {
     }
 
     notify(): void {
-        var currentPosition: GPSPosition = this.trace.getCurrentPosition();
+        var currentPosition: Position = this.trace.getCurrentPosition();
         if(currentPosition) {
-            this.latElement.textContent = currentPosition.lat.toString();
-            this.lonElement.textContent = currentPosition.lon.toString();
-            this.altitudeElement.textContent = currentPosition.elevation.toString();
+            this.latElement.textContent = currentPosition.coords.latitude.toString();
+            this.lonElement.textContent = currentPosition.coords.longitude.toString();
+            this.altitudeElement.textContent = currentPosition.coords.altitude.toString();
         }
         this.trackPointsElement.textContent = this.trace.getNumberOfTrackPoints().toString();
     }

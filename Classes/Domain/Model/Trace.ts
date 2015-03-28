@@ -9,9 +9,21 @@ class Trace {
     positionList: GPSPosition[] = [];
     trackStep: number = 1;
     observers: Observer[] = [];
+    currentPosition: Position;
+    geoService: Geolocation = null;
+    watcher:number = null;
 
-    constructor(trackStep: number) {
+    constructor(trackStep: number, geoService) {
         this.trackStep = trackStep;
+        this.geoService = geoService;
+    }
+
+    setTrackStep(step: number): void {
+        this.trackStep = step;
+    }
+
+    isRecording(): boolean {
+        return this.state;
     }
 
     addObserver(observer: Observer) {
@@ -28,12 +40,8 @@ class Trace {
         return this.positionList.length;
     }
 
-    getCurrentPosition(): GPSPosition {
-        if(this.positionList.length > 0) {
-            return this.positionList[this.positionList.length-1];
-        } else {
-            return null;
-        }
+    getCurrentPosition(): Position {
+        return this.currentPosition;
     }
 
     getTraceList(): GPSPosition[] {
@@ -45,39 +53,60 @@ class Trace {
         this.notifyObservers();
     }
 
-    findMyCurrentLocation(geoService): void{
-        var positionList = this.positionList;
-        var delayTime = this.trackStep*1000;
+    startRecording(): void {
+        this.state = true;
+        if (this.geoService) {
+            // find position first, start tracking after
+            this.geoService.getCurrentPosition(
+                function(position) {
+                    this.currentPosition = position;
+                    this.watcher = this.geoService.watchPosition(
+                        function(position) {
+                            this.currentPosition = position;
+                            this.notifyObservers();
+                        }.bind(this),
+                        function(error) {
+                            console.warn(error);
+                        },
+                        { maximumAge: this.trackStep*1000/4 }
+                    );
 
-        var findMyCurrentLocation = this.findMyCurrentLocation.bind(this);
-        var notifyObservers = this.notifyObservers.bind(this);
+                    this.recordTrace(
+                        this.state,
+                        this.positionList,
+                        this.currentPosition,
+                        this.trackStep*1000,
+                        this.recordTrace.bind(this)
+                    )
+                }.bind(this),
+                function(error) {
+                    console.warn(error);
+                }
+            );
+        } else {
+            console.warn("Geolocation not supported!");
+        }
+    }
 
-        if(this.state === true) {
-            if (geoService) {
-                setTimeout(function() {
-                    var geoServiceClousure = geoService;
-                    findMyCurrentLocation(geoServiceClousure);
-                }, delayTime);
-                geoService.getCurrentPosition(
-                    function(position) {
-                        positionList.push(
-                            new GPSPosition(
-                                // call by value
-                                <number>(new Number(position.coords.latitude)),
-                                <number>(new Number(position.coords.longitude)),
-                                <number>(new Number(position.coords.altitude)),
-                                (new Date(position.timestamp)).toJSON().toString()
-                            )
-                        );
-                        notifyObservers();
-                    },
-                    function(error) {
-                        console.log(error);
-                    }
-                );
-            } else {
-                console.log("Geolocation not supported!");
-            }
+    stopRecording(): void {
+        this.state = false;
+        this.geoService.clearWatch(this.watcher);
+    }
+
+    recordTrace(state, positionList, currentPosition, delayTime, recordTrace): void {
+        if(state === true && currentPosition) {
+            setTimeout(function() {
+                recordTrace(state, positionList, currentPosition, delayTime, recordTrace);
+            }, delayTime);
+            positionList.push(
+                new GPSPosition(
+                    // call by value
+                    <number>(new Number(currentPosition.coords.latitude)),
+                    <number>(new Number(currentPosition.coords.longitude)),
+                    <number>(new Number(currentPosition.coords.altitude)),
+                    (new Date(currentPosition.timestamp)).toJSON().toString()
+                )
+            );
         }
     }
 
