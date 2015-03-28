@@ -2,11 +2,13 @@
 
 /// <reference path="../../Classes/Domain/Model/GPSPosition.ts" />
 /// <reference path="../../Classes/Domain/Model/Observer.ts" />
-/// <reference path="../../Classes/Domain/Model/TraceFactory.ts" />
+/// <reference path="../../Classes/Domain/Model/Trace.ts" />
+
+/// <reference path="../../Classes/Factory/TraceFactory.ts" />
 
 
 class TraceController implements Observer {
-    traceFactory: TraceFactory;
+    trace: Trace;
 
     latElement: HTMLElement;
     lonElement: HTMLElement;
@@ -24,21 +26,21 @@ class TraceController implements Observer {
         this.trackPointsElement = document.getElementById("trackPoints");
         this.trackStepElement = <HTMLInputElement>document.getElementById("trackStep");
 
-        this.traceFactory = new TraceFactory(Number(this.trackStepElement.value));
+        this.trace = new Trace(Number(this.trackStepElement.value));
 
         this.saveButton = <HTMLButtonElement>document.getElementById("save");
         this.controlButton = <HTMLButtonElement>document.getElementById("control");
         this.resetButton = <HTMLButtonElement>document.getElementById("reset");
 
         this.controlButton.addEventListener("click", function(event){
-            if(this.traceFactory.state === true) {
-                this.traceFactory.state = false;
+            if(this.trace.state === true) {
+                this.trace.state = false;
                 this.controlButton.textContent = "Start";
                 this.setSaveButtonState();
                 this.resetButton.removeAttribute("disabled");
             } else {
-                this.traceFactory.state = true;
-                this.traceFactory.findMyCurrentLocation(navigator.geolocation);
+                this.trace.state = true;
+                this.trace.findMyCurrentLocation(navigator.geolocation);
                 this.controlButton.textContent = "Stop";
                 this.setSaveButtonState();
                 this.resetButton.setAttribute("disabled", "disabled");
@@ -46,23 +48,26 @@ class TraceController implements Observer {
         }.bind(this));
 
         this.resetButton.addEventListener("click", function(event){
-            this.traceFactory.resetTraceList();
+            this.trace.resetTraceList();
         }.bind(this));
 
         this.trackStepElement.addEventListener("change", function(event) {
-            this.traceFactory.trackStep = Number(this.trackStepElement.value);
+            this.trace.trackStep = Number(this.trackStepElement.value);
         }.bind(this));
 
         this.saveButton.addEventListener("click", function(event){
-            this.traceFactory.saveTrace();
+            var traceFactory = new TraceFactory(this.trace.getTraceList());
+            traceFactory.saveTrace(function() {
+                this.trace.resetTraceList();
+            }.bind(this));
         }.bind(this));
 
-        this.traceFactory.addObserver(this);
+        this.trace.addObserver(this);
     }
 
 
     setSaveButtonState(): void {
-        if(this.traceFactory.state === false && this.traceFactory.getNumberOfTrackPoints() > 0) {
+        if(this.trace.state === false && this.trace.getNumberOfTrackPoints() > 0) {
             this.saveButton.removeAttribute("disabled");
         } else {
             this.saveButton.setAttribute("disabled", "disabled");
@@ -70,12 +75,12 @@ class TraceController implements Observer {
     }
 
     notify(): void {
-        var currentPosition: GPSPosition = this.traceFactory.getCurrentPosition();
+        var currentPosition: GPSPosition = this.trace.getCurrentPosition();
         if(currentPosition) {
             this.latElement.textContent = currentPosition.lat.toString();
             this.lonElement.textContent = currentPosition.lon.toString();
             this.altitudeElement.textContent = currentPosition.elevation.toString();
         }
-        this.trackPointsElement.textContent = this.traceFactory.getNumberOfTrackPoints().toString();
+        this.trackPointsElement.textContent = this.trace.getNumberOfTrackPoints().toString();
     }
 }
