@@ -4,9 +4,9 @@
 	"description": "Record GPS traces and save as gpx file with FxOS.",
 	"launch_path": "/index.html",
 	"icons": {
-		"32": "/Resources/Img/appIcon-32.png",
-		"128": "/Resources/Img/appIcon-256.png",
-		"256": "/Resources/Img/appIcon-256.png"
+		"32": "/Resources/Images/appIcon-32.png",
+		"128": "/Resources/Images/appIcon-256.png",
+		"256": "/Resources/Images/appIcon-256.png"
 	},
 	"developer": {
 		"name": "moonline",
@@ -22,6 +22,6 @@
 			"access": "readwrite"
 		}
 	},
-	"orientation": "portrait",
+	"orientation": ["portrait"],
 	"default_locale": "en"
 }

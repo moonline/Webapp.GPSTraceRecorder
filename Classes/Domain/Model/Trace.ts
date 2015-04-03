@@ -88,7 +88,7 @@ class Trace {
                 { maximumAge: Infinity }
             );
         } else {
-            console.warn("Geolocation not supported!");
+            alert("Geolocation not supported!");
         }
     }
 
