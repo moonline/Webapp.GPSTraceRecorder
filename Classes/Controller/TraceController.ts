@@ -13,20 +13,32 @@ class TraceController implements Observer {
     latElement: HTMLElement;
     lonElement: HTMLElement;
     altitudeElement: HTMLElement;
+    accuracyLatElement: HTMLSpanElement;
+    accuracyLonElement: HTMLSpanElement;
+    accuracyAltitudeElement: HTMLSpanElement;
+
     trackPointsElement: HTMLElement;
     trackStepElement: HTMLInputElement;
     saveButton: HTMLButtonElement;
     controlButton: HTMLButtonElement;
     resetButton: HTMLButtonElement;
+    enableHighAccuracyCheckbox: HTMLInputElement;
+    statusElement: HTMLSpanElement;
 
     constructor() {
         this.latElement = document.getElementById("lat");
         this.lonElement = document.getElementById("lon");
         this.altitudeElement = document.getElementById("altitude");
+        this.accuracyLatElement = <HTMLSpanElement>document.getElementById("accuracyLat");
+        this.accuracyLonElement = <HTMLSpanElement>document.getElementById("accuracyLon");
+        this.accuracyAltitudeElement = <HTMLSpanElement>document.getElementById("AccuracyAltitude");
+
         this.trackPointsElement = document.getElementById("trackPoints");
         this.trackStepElement = <HTMLInputElement>document.getElementById("trackStep");
+        this.enableHighAccuracyCheckbox = <HTMLInputElement>document.getElementById("enableHighAccuracy");
+        this.statusElement = <HTMLSpanElement>document.getElementById("statusBubble");
 
-        this.trace = new Trace(Number(this.trackStepElement.value), navigator.geolocation);
+        this.trace = new Trace(Number(this.trackStepElement.value), this.enableHighAccuracyCheckbox.checked, navigator.geolocation);
 
         this.saveButton = <HTMLButtonElement>document.getElementById("save");
         this.controlButton = <HTMLButtonElement>document.getElementById("control");
@@ -76,10 +88,20 @@ class TraceController implements Observer {
     notify(): void {
         var currentPosition: Position = this.trace.getCurrentPosition();
         if(currentPosition) {
-            this.latElement.textContent = currentPosition.coords.latitude.toString();
-            this.lonElement.textContent = currentPosition.coords.longitude.toString();
+            this.latElement.textContent = Number((currentPosition.coords.latitude).toFixed(7)).toString();
+            this.lonElement.textContent = Number((currentPosition.coords.longitude).toFixed(7)).toString();
             this.altitudeElement.textContent = currentPosition.coords.altitude.toString();
+
+            this.accuracyLatElement.innerHTML = '&plusmn;'+Number((currentPosition.coords.accuracy).toFixed(1)).toString()+'m';
+            this.accuracyLonElement.innerHTML = '&plusmn;'+Number((currentPosition.coords.accuracy).toFixed(1)).toString()+'m';
+            this.accuracyAltitudeElement.innerHTML = '&plusmn;'+Number((currentPosition.coords.altitudeAccuracy).toFixed(1)).toString()+'m';
         }
         this.trackPointsElement.textContent = this.trace.getNumberOfTrackPoints().toString();
+
+        if(this.trace.isRecording() && this.trace.getNumberOfTrackPoints() > 0) {
+            this.statusElement.setAttribute("data-status", "on");
+        } else {
+            this.statusElement.setAttribute("data-status", "off");
+        }
     }
 }

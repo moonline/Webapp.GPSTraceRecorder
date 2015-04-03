@@ -12,9 +12,11 @@ class Trace {
     currentPosition: Position;
     geoService: Geolocation = null;
     watcher:number = null;
+    enableHighAccuracy: boolean = true;
 
-    constructor(trackStep: number, geoService) {
+    constructor(trackStep: number, enableHighAccuracy: boolean, geoService) {
         this.trackStep = trackStep;
+        this.enableHighAccuracy = enableHighAccuracy;
         this.geoService = geoService;
     }
 
@@ -68,7 +70,7 @@ class Trace {
                         function(error) {
                             console.warn(error);
                         },
-                        { maximumAge: this.trackStep*1000/4 }
+                        { enableHighAccuracy: this.enableHighAccuracy }
                     );
 
                     this.recordTrace(
@@ -76,12 +78,14 @@ class Trace {
                         this.positionList,
                         this.currentPosition,
                         this.trackStep*1000,
-                        this.recordTrace.bind(this)
+                        this.recordTrace.bind(this),
+                        this.notifyObservers.bind(this)
                     )
                 }.bind(this),
                 function(error) {
                     console.warn(error);
-                }
+                },
+                { maximumAge: Infinity }
             );
         } else {
             console.warn("Geolocation not supported!");
@@ -91,9 +95,10 @@ class Trace {
     stopRecording(): void {
         this.state = false;
         this.geoService.clearWatch(this.watcher);
+        this.notifyObservers();
     }
 
-    recordTrace(state, positionList, currentPosition, delayTime, recordTrace): void {
+    recordTrace(state, positionList, currentPosition, delayTime, recordTrace, notifyObservers): void {
         if(state === true && currentPosition) {
             setTimeout(function() {
                 recordTrace(state, positionList, currentPosition, delayTime, recordTrace);
@@ -107,6 +112,8 @@ class Trace {
                     (new Date(currentPosition.timestamp)).toJSON().toString()
                 )
             );
+            notifyObservers();
+            console.log(currentPosition);
         }
     }
 

@@ -18,9 +18,10 @@
 			"description" : "Used to record your position."
 		},
 		"device-storage:sdcard": {
-			"description": "Used to saved the recorded traces as gpx.",
+			"description": "Required to saved the recorded traces as gpx.",
 			"access": "readwrite"
 		}
 	},
+	"orientation": "portrait",
 	"default_locale": "en"
 }

@@ -12,14 +12,28 @@
 		<section class="view skin-dark">
 			<header>
 				<h1>GPS Trace Recorder</h1>
+				<span id="statusBubble" data-status="off"></span>
 			</header>
 			<div class="main">
 				<table class="position-data">
 					<tbody>
-						<tr><th>Latitude</th><td id="lat"></td></tr>
-						<tr><th>Longitude</th><td id="lon"></td></tr>
-						<tr><th>Altitude</th><td id="altitude"></td></tr>
+						<tr>
+							<th>Latitude <span class="accuracy" id="accuracyLat"></span></th>
+							<td id="lat"></td>
+						</tr>
+						<tr>
+							<th>Longitude <span class="accuracy" id="accuracyLon"></span>
+							</th><td id="lon"></td>
+						</tr>
+						<tr>
+							<th>Altitude <span class="accuracy" id="AccuracyAltitude"></span></th>
+							<td id="altitude"></td>
+						</tr>
 						<tr><th>Trackpoints</th><td id="trackPoints"></td></tr>
+						<tr><th>High accuracy</th><td>
+							<input type="checkbox" class="switch" checked="checked" name="enableHighAccuracy" id="enableHighAccuracy" />
+							<span class="switch"></span>
+						</td></tr>
 						<tr><th>Interval</th><td>
 							<input type="number" step="0.5" min="0.5" max="1440" value="2" name="trackStep" id="trackStep" />
 							sec

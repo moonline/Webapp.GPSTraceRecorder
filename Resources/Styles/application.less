@@ -28,6 +28,7 @@ footer {
     table {
         text-align: left;
         width: 100%;
+        font-size: 1.8rem;
 
         tr {
             width: 100%;
@@ -39,19 +40,32 @@ footer {
             font-weight: bold;
         }
         th, td {
-            padding: 0.75rem 1rem;
+            padding: 1rem;
             width: 50%;
+
+            .accuracy {
+                font-weight: normal;
+                font-size: 1.5rem;
+            }
         }
     }
-    td > input {
-        max-width: 80%;
-        width: 80%;
-        padding: 0 1rem;
-        margin: -0.25rem -1rem;
-        margin-right: 1rem;
-        border: none;
-        background: rgb(50,50,50);
-        color: white;
+    td {
+        > input {
+            &[type="number"], &[type="text"] {
+                font-size: inherit;
+                max-width: 60%;
+                width: 60%;
+                padding: 0 1rem;
+                margin: -0.25rem -1rem;
+                margin-right: 1rem;
+                border: none;
+                background: rgb(65,65,65);
+                color: white;
+            }
+        }
+        > input[type="checkbox"].switch + span.switch {
+            margin: -0.75rem 0;
+        }
     }
 }
 .block {
@@ -76,3 +90,43 @@ table {
         font-weight: bold;
     }
 }
+
+
+/**
+ * @author tobiasahlin
+ * @url https://github.com/tobiasahlin/SpinKit
+ */
+#statusBubble[data-status="on"] {
+    position: absolute;
+    top: 0;
+    right: 0.5rem;
+
+    display: inline-block;
+    width: 4rem;
+    height: 4rem;
+    margin: 1rem auto;
+    background-color: white;
+    border-radius: 100%;
+
+    -webkit-animation: scaleout 1.0s infinite ease-in-out;
+    animation: scaleout 1.0s infinite ease-in-out;
+}
+
+@-webkit-keyframes scaleout {
+    0% { -webkit-transform: scale(0.0) }
+    100% {
+        -webkit-transform: scale(1.0);
+        opacity: 0;
+    }
+}
+
+@keyframes scaleout {
+    0% {
+        transform: scale(0.0);
+        -webkit-transform: scale(0.0);
+        } 100% {
+            transform: scale(1.0);
+            -webkit-transform: scale(1.0);
+            opacity: 0;
+        }
+    }
