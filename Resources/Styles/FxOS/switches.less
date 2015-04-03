@@ -1,0 +1,31 @@
+/**
+ * move span switcher behind checkbox and set its opacity to 0
+ */
+input[type="checkbox"].switch, input[type="checkbox"].switch + span.switch {
+    width: 6.75rem;
+    height: 3rem;
+    border-radius: 3rem;
+    display: inline-block;
+    border: none;
+}
+input[type="checkbox"].switch {
+    position: absolute;
+    opacity: 0;
+    transform: scale(3);
+    -moz-transform: scale(3);
+    margin-left: 2rem;
+}
+/**
+ * Image source
+ * https://github.com/buildingfirefoxos/Building-Blocks/tree/gh-pages/style/switches/images/switch
+ */
+input[type="checkbox"].switch + span.switch {
+    background-image: url("../../Resources/Images/Switches/backgroundOff.png");
+    background-size: 155% 100%;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+input[type="checkbox"]:checked.switch + span.switch {
+    background-image: url("../../Resources/Images/Switches/background.png");
+    background-position: 100% 0;
+}
